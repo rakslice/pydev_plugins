@@ -14,7 +14,7 @@ from org.eclipse.jface.action import MenuManager
 from org.eclipse.ui import IViewSite
 
 """
-Add some menu items to Eclipse for modifying the selected text even in non-pydev editors
+Add some menu items to Eclipse for modifying the selected text (that work even in non-Python editors)
 
 To use these, 
 1) install PyDev in Eclipse (e.g. under Help -> Eclipse Marketplace) and restart it
@@ -44,7 +44,6 @@ class EclipsePydevPluginHelper(object):
     
         # and create an instance of it.
         runner = SelectedTextGetterRunnable()
-        
         
         display = Display.getDefault()
         display.asyncExec(runner)
@@ -263,7 +262,8 @@ class EditorTextSelectionHelper(EclipsePydevPluginHelper):
         document.replace(offset, length, text)
         
         if new_selection_offset is not None and new_selection_length is not None:
-
+            # TODO select the desired new selection
+            pass
 
 def has_balanced_parens(s):
     paren_depth = 0
