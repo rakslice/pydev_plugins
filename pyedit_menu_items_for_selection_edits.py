@@ -10,6 +10,7 @@ from org.eclipse.jface.text import TextSelection
 from org.eclipse.swt import SWT
 from org.eclipse.swt.widgets import Display
 from org.eclipse.ui import PlatformUI
+from org.eclipse.ui.texteditor import ITextEditor
 
 """
 Add some menu items to Eclipse for modifying the selected text (that work even in non-Python editors)
@@ -243,13 +244,20 @@ class EditorTextSelectionHelper(EclipsePydevPluginHelper):
     #             show_dir(editor)
     
     def set_selection_text(self, text, new_selection_offset=None, new_selection_length=None):
+        """
+        Replace the selected text with the given text
+        @param text: text to replace the selected text with
+        @param new_selection_offset: (optional) if a new selection should be set, offset of the new selection relative to the old one
+        @param new_selection_length: (optional) if a new selection should be set, length of the new selection 
+        """
         print "set selection text: %r" % text
         editor = self.get_text_editor()
         if editor is None:
             print "Can't set selection -- don't have editor"
             return
         
-        selection = editor.getSelectionProvider().getSelection()
+        selection_provider = editor.getSelectionProvider()
+        selection = selection_provider.getSelection()
         
         if selection is None:
             print "selection was None"
@@ -262,8 +270,9 @@ class EditorTextSelectionHelper(EclipsePydevPluginHelper):
         document.replace(offset, length, text)
         
         if new_selection_offset is not None and new_selection_length is not None:
-            # TODO select the desired new selection
-            pass
+            # set the desired new selection
+            new_selection = TextSelection(document, offset + new_selection_offset, new_selection_length)
+            selection_provider.setSelection(new_selection)
 
 def has_balanced_parens(s):
     paren_depth = 0
