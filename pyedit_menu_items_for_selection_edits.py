@@ -4,14 +4,12 @@ import threading
 print "%s RELOADED" % __file__
 
 from java.lang import Runnable
+from org.eclipse.jface.action import Action
+from org.eclipse.jface.action import MenuManager
+from org.eclipse.jface.text import TextSelection
+from org.eclipse.swt import SWT
 from org.eclipse.swt.widgets import Display
 from org.eclipse.ui import PlatformUI
-from org.eclipse.ui.texteditor import ITextEditor
-from org.eclipse.jface.action import Action
-from org.eclipse.swt import SWT
-from org.eclipse.ui import PlatformUI
-from org.eclipse.jface.action import MenuManager
-from org.eclipse.ui import IViewSite
 
 """
 Add some menu items to Eclipse for modifying the selected text (that work even in non-Python editors)
@@ -134,8 +132,10 @@ class EclipseMenuHelper(EclipsePydevPluginHelper):
         
         # create an instance of the action
         our_action = TempMenuActionClass(action_name)
-    
+
+        # https://wiki.eclipse.org/FAQ_How_do_I_provide_a_keyboard_shortcut_for_my_action%3F    
         if shortcut_key is not None:
+            # FIXME make sure we support SWT constants (e.g. arrow keys) for shotcut_key
             assert isinstance(shortcut_key, str) and len(shortcut_key) == 1
             our_action.setAccelerator(shortcut_modifiers | ord(shortcut_key))
         
