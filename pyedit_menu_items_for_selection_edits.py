@@ -6,7 +6,8 @@ print "%s RELOADED" % __file__
 from java.lang import Runnable
 from org.eclipse.jface.action import Action
 from org.eclipse.jface.action import MenuManager
-from org.eclipse.jface.text import TextSelection
+from org.eclipse.jface.text import IDocument, TextSelection
+from org.eclipse.jface.viewers import ISelectionProvider
 from org.eclipse.swt import SWT
 from org.eclipse.swt.widgets import Display
 from org.eclipse.ui import PlatformUI
@@ -243,7 +244,14 @@ class EditorTextSelectionHelper(EclipsePydevPluginHelper):
         self.run_in_display(within_display)
     #             show_dir(editor)
     
-    def set_selection_text(self, text, new_selection_offset=None, new_selection_length=None):
+    def set_selection(self, document, selection_provider, offset, length):
+        assert isinstance(document, IDocument)
+        assert isinstance(selection_provider, ISelectionProvider)
+        new_selection = TextSelection(document, offset, length)
+        selection_provider.setSelection(new_selection)
+        
+    
+    def replace_selection_text(self, text, new_selection_offset=None, new_selection_length=None):
         """
         Replace the selected text with the given text
         @param text: text to replace the selected text with
@@ -271,8 +279,7 @@ class EditorTextSelectionHelper(EclipsePydevPluginHelper):
         
         if new_selection_offset is not None and new_selection_length is not None:
             # set the desired new selection
-            new_selection = TextSelection(document, offset + new_selection_offset, new_selection_length)
-            selection_provider.setSelection(new_selection)
+            self.set_selection(document, selection_provider, offset + new_selection_offset, new_selection_length)
 
 def has_balanced_parens(s):
     paren_depth = 0
@@ -355,7 +362,7 @@ class SelectedTextChanger(EditorTextSelectionHelper, EclipseMenuHelper):
             new_selection_offset = len(new_cast_keyword) + len(casted_to_type) + 3
             new_selection_length = len(expression_text)
             
-            self.set_selection_text(new_text, new_selection_offset=new_selection_offset, new_selection_length=new_selection_length)
+            self.replace_selection_text(new_text, new_selection_offset=new_selection_offset, new_selection_length=new_selection_length)
         
         self.get_selected_text(exception_wrap_func(with_selected_text))        
 
