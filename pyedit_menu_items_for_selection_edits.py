@@ -345,7 +345,7 @@ class SelectedTextChanger(EditorTextSelectionHelper, EclipseMenuHelper):
                 expression_text = expression_text[:-1]
 
             # remove redundant parens around the expression that is being cast
-            if expression_text.startswith("(") and expression_text.endswith(")"):
+            if expression_text.startswith("(") and expression_text.endswith(")") and has_balanced_parens(expression_text[1:-1]):
                 expression_text = expression_text[1:-1]
                 
             if expression_text == "":
